@@ -3,7 +3,9 @@ import pandas as pd
 class DataModifier:
     def __init__(self, filename):
         # Load CSV, store original (untouched), and working (mutable) copies
-        pass
+        self.filename = filename
+        self.original_df = pd.read_csv(filename)
+        self.working_df = self.original_df.copy()
 
     def reset(self):
         # Revert working_df back to a fresh copy of original_df
@@ -27,7 +29,7 @@ class DataModifier:
 
     def display(self):
         # Displays working_df in console
-        pass
+        print(self.working_df)
 
     def get_columns(self):
         # Return/print list of available columns (used by multiple menu options)

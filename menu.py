@@ -1,7 +1,9 @@
+from data_modifier import DataModifier
+
 class Menu:
     def __init__(self, filename):
         # Create a DataModifier instance to operate on
-        pass
+        self.data_modifier = DataModifier(filename)
 
     def run(self):
         # Main loop: print the menu, get input, handle w functions below, repeat until quit
