@@ -9,7 +9,7 @@ class DataModifier:
 
     def reset(self):
         # Revert working_df back to a fresh copy of original_df
-        pass
+        self.working_df = self.original_df.copy()
 
     def sort(self, column, ascending=True):
         # Sort working_df by column, ascending (default) or descending
@@ -21,11 +21,19 @@ class DataModifier:
 
     def aggregate(self, column, method):
         # Compute mean/median/sum for a chosen column
-        pass
+        if method == "mean":
+            return self.working_df[column].mean()
+        elif method == "median":
+                    return self.working_df[column].median()
+        elif method == "sum":
+                    return self.working_df[column].sum()
+        else:
+             print(f"Invalid method: {method}")
+             return None
 
     def correlate(self, column_a, column_b):
         # Calculates correlation between two columns, returns plain-English interpretation
-        pass
+        return self.working_df[column_a].corr(self.working_df[column_b])
 
     def display(self):
         # Displays working_df in console
@@ -33,4 +41,4 @@ class DataModifier:
 
     def get_columns(self):
         # Return/print list of available columns (used by multiple menu options)
-        pass
+        return list(self.working_df.columns)
