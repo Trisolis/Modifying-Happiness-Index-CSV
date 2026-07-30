@@ -33,4 +33,79 @@ class Menu:
 
     def handle_input(self, choice):
         # Map user choice to appropriate DataModifier method
+        dm = self.data_modifier
+        if choice == "1":
+            # Reset
+            dm.reset()
+            print("Data reset to original CSV")
+
+        elif choice == "2":
+            # Sort
+            print("Available columns: ", dm.get_columns())
+            col = input("Which column would you like to sort by?").strip()
+            asc = input("Ascending or descending? (a/d)").strip()
+            dm.sort(col, ascending=(asc != d))
+            dm.display()
+
+        elif choice == "3":
+            # Filter
+            print("Available columns: ", dm.get_columns())
+            raw = input(
+            "Enter condition(s), format: column operator value | column operator value ...\n"
+            "Example: Region == Europe | Happiness Score > 5\n> "
+            )
+            conditions = self._parse_conditions(raw)
+            if conditions is not None:
+                dm.filter(conditions)
+                dm.display()
+        
+        elif choice == "4":
+            # Aggregate
+            print("Available columns: ", dm.get_columns())
+            column = input("What column would you like to aggregate?")
+            method = input("What would you like to do? (mean/median/sum)")
+            result = dm.aggregate(column, method)
+            print(f"{method} of {column} is {result}")
+
+        
+        elif choice == "5":
+            # Correlate
+            print("Available columns: ", dm.get_columns())
+            col_a = input("First column: ")
+            col_b = input("Second column: ")
+            correlation = dm.correlate(col_a, col_b)
+
+            if correlation is None:
+                print("Invalid first or second column. Please try again.")
+
+            else:
+                # Have to account for positive or negative correlations, as well as strength
+                strength = abs(correlation)
+                direction = "positive" if correlation > 0 else "negative"
+
+                if strength <= 0.3:
+                    label = "no meaningful"
+                elif strength <= 0.5:
+                    label = "a weak"
+                elif strength <= 0.8:
+                    label = "a moderate"
+                else:
+                    label = "a strong"
+
+                print(f"Your correlation value is: {strength:.2f}. This means there is {label} {direction} correlation between your two variables")
+
+        
+        elif choice == "6":
+            # Display
+            dm.display()
+
+        elif choice == "7":
+            # Display columns
+            dm.get_columns()
+
+        else:
+            print("Invalid choice. Please try again.")
+
+    def _parse_conditions(self, raw):
+        # Helper for parsing strings for Filter
         pass
