@@ -13,11 +13,36 @@ class DataModifier:
 
     def sort(self, column, ascending=True):
         # Sort working_df by column, ascending (default) or descending
-        pass
+        if column not in self.working_df.columns:
+             print(f"Column '{column}' not found.")
+             return
+        self.working_df.sort_values(by=column, ascending=ascending)
 
     def filter(self, conditions):
-        # Filter working_df by condition(s)
-        pass
+        # Filter working_df by condition(s). List of (column, operator, value) tuples are passed here, then parsed
+        df = self.working_df
+
+        # Creating a dict of lambdas, slightly faster than writing a bunch of if statements
+        operators = {
+             "==": lambda col, val: df[col] == val,
+             "!=": lambda col, val: df[col] != val,
+             ">": lambda col, val: df[col] > val,
+             "<": lambda col, val: df[col] < val,
+             ">=": lambda col, val: df[col] >= val,
+             "<=": lambda col, val: df[col] <= val,
+        }
+
+        # Edge case handling + enacts changes onto df
+        for column, operator, value in conditions:
+             if column not in df.columns:
+                  print(f"Column '{column}' not found.")
+                  return
+             if operator not in operators:
+                  print(f"Unknown operator '{operator}'.")
+                  return
+             df = df[operators[operator](column, value)]
+
+        self.working_df = df
 
     def aggregate(self, column, method):
         # Compute mean/median/sum for a chosen column
@@ -37,7 +62,17 @@ class DataModifier:
 
     def display(self):
         # Displays working_df in console
-        print(self.working_df)
+        if self.working_df.empty:
+            print("No data to display (current filter/result is empty).")
+            return
+
+        # Formatting, changes display options only for this block of code, not throughout the program
+        with pd.option_context(
+            "display.max_columns", None,   # don't truncate columns
+            "display.width", None,         # don't wrap based on terminal guess
+            "display.float_format", "{:.2f}".format,  # 2 decimal places
+        ):
+            print(self.working_df)
 
     def get_columns(self):
         # Return/print list of available columns (used by multiple menu options)

@@ -2,12 +2,31 @@ from menu import Menu
 
 if __name__ == "__main__":
     menu = Menu("2015.csv")
+    dm = menu.data_modifier
     # menu.run()
-    menu.data_modifier.display()
-    print(menu.data_modifier.get_columns())
-    print(menu.data_modifier.aggregate("Happiness Score", "mean"))
-    print(menu.data_modifier.aggregate("Happiness Score", "sum"))
-    print(menu.data_modifier.correlate("Happiness Score", "Freedom"))
+    dm.display()
+    print(dm.get_columns())
+    print(dm.aggregate("Happiness Score", "mean"))
+    print(dm.aggregate("Happiness Score", "sum"))
+    print(dm.correlate("Happiness Score", "Freedom"))
 
-    menu.data_modifier.reset()
-    menu.data_modifier.display()
+    # single condition
+    dm.filter([("Family", ">", 1.00)])
+    dm.display()
+
+    dm.reset()
+
+    # multiple conditions (AND)
+    dm.filter([("Family", ">", 1.00), ("Happiness Rank", "<=", 25)])
+    dm.display()
+
+    dm.reset()
+
+    # string equality
+    dm.filter([("Region", "==", "Western Europe")])
+    dm.display()
+
+    dm.reset()
+
+    # edge case: bad column name
+    dm.filter([("height", ">", 10)])
