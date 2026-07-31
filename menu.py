@@ -8,7 +8,7 @@ class Menu:
     def run(self):
         # Main loop: print the menu, get input, handle w functions below, repeat until quit
         while True:
-            self.printmenu()
+            self.print_menu()
             choice = input("Enter your choice: ")
 
             if choice == "8":
@@ -42,9 +42,9 @@ class Menu:
         elif choice == "2":
             # Sort
             print("Available columns: ", dm.get_columns())
-            col = input("Which column would you like to sort by?").strip()
-            asc = input("Ascending or descending? (a/d)").strip()
-            dm.sort(col, ascending=(asc != d))
+            col = input("Which column would you like to sort by? ").strip()
+            asc = input("Ascending or descending? (a/d) ").strip()
+            dm.sort(col, ascending=(asc != "d"))
             dm.display()
 
         elif choice == "3":
@@ -52,7 +52,7 @@ class Menu:
             print("Available columns: ", dm.get_columns())
             raw = input(
             "Enter condition(s), format: column operator value | column operator value ...\n"
-            "Example: Region == Europe | Happiness Score > 5\n> "
+            "Example: Region == Western Europe | Happiness Score > 5\n> "
             )
             conditions = self._parse_conditions(raw)
             if conditions is not None:
@@ -62,9 +62,10 @@ class Menu:
         elif choice == "4":
             # Aggregate
             print("Available columns: ", dm.get_columns())
-            column = input("What column would you like to aggregate?")
-            method = input("What would you like to do? (mean/median/sum)")
+            column = input("What column would you like to aggregate? ")
+            method = input("What would you like to do? (mean/median/sum) ")
             result = dm.aggregate(column, method)
+
             print(f"{method} of {column} is {result}")
 
         
@@ -76,7 +77,7 @@ class Menu:
             correlation = dm.correlate(col_a, col_b)
 
             if correlation is None:
-                print("Invalid first or second column. Please try again.")
+                return
 
             else:
                 # Have to account for positive or negative correlations, as well as strength
@@ -92,7 +93,7 @@ class Menu:
                 else:
                     label = "a strong"
 
-                print(f"Your correlation value is: {strength:.2f}. This means there is {label} {direction} correlation between your two variables")
+                print(f"Your correlation value is: {correlation:.2f}. This means there is {label} {direction} correlation between your two variables")
 
         
         elif choice == "6":
@@ -101,11 +102,39 @@ class Menu:
 
         elif choice == "7":
             # Display columns
-            dm.get_columns()
+            print(dm.get_columns())
 
         else:
             print("Invalid choice. Please try again.")
 
     def _parse_conditions(self, raw):
         # Helper for parsing strings for Filter
-        pass
+        valid_operators = ["==", "!=", ">=", "<=", ">", "<"] # longer operations go first, otherwise > would be recognized first even if using >=
+        conditions = []
+
+        # Checks each raw data 'chunk' for a valid operator, and returns None if none found
+        for chunk in raw.split("|"):
+            chunk = chunk.strip()
+            found_operator = None
+            for op in valid_operators:
+                if op in chunk:
+                    found_operator = op
+                    break
+
+            if found_operator is None:
+                print(f"Could not find a valid operator in '{chunk}'")
+                return None
+
+            # Another split to find column and value out of the already split chunk
+            column, value = chunk.split(found_operator)
+            column = column.strip()
+            value = value.strip()
+
+            try:
+                value = float(value)
+            except ValueError:
+                pass # keep as string if it's not a number value
+
+            conditions.append((column, found_operator, value))
+
+        return conditions

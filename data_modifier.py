@@ -16,7 +16,7 @@ class DataModifier:
         if column not in self.working_df.columns:
              print(f"Column '{column}' not found.")
              return
-        self.working_df.sort_values(by=column, ascending=ascending)
+        self.working_df = self.working_df.sort_values(by=column, ascending=ascending)
 
     def filter(self, conditions):
         # Filter working_df by condition(s). List of (column, operator, value) tuples are passed here, then parsed
@@ -46,6 +46,13 @@ class DataModifier:
 
     def aggregate(self, column, method):
         # Compute mean/median/sum for a chosen column
+        if column not in self.working_df.columns:
+             print(f"Invalid column: {column}.")
+             return None
+        if not pd.api.types.is_numeric_dtype(self.working_df[column]): # checks if String rather than number
+            print(f"Column '{column}' is not numeric, cannot aggregate.")
+            return None
+
         if method == "mean":
             return self.working_df[column].mean()
         elif method == "median":
@@ -58,6 +65,14 @@ class DataModifier:
 
     def correlate(self, column_a, column_b):
         # Calculates correlation between two columns, returns plain-English interpretation
+        for col in (column_a, column_b):
+             if col not in self.working_df.columns:
+                  print(f"Column '{col} not found.")
+                  return None
+             if not pd.api.types.is_numeric_dtype(self.working_df[col]):
+                print(f"Column '{col}' is not numeric, cannot aggregate.")
+                return None
+        
         return self.working_df[column_a].corr(self.working_df[column_b])
 
     def display(self):
