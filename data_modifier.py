@@ -81,14 +81,31 @@ class DataModifier:
             print("No data to display (current filter/result is empty).")
             return
 
+        # Shorter labels for display only — real column names (used by sort/filter/etc.) stay unchanged
+        short_names = {
+            "Happiness Rank": "Rank",
+            "Happiness Score": "Score",
+            "Standard Error": "Std Error",
+            "Economy (GDP per Capita)": "Economy",
+            "Health (Life Expectancy)": "Health",
+            "Trust (Government Corruption)": "Trust",
+            "Dystopia Residual": "Dystopia",
+        }
+
+        display_df = self.working_df.rename(columns=short_names) # don't want to actually change column names for when user has to input them
+
         # Formatting, changes display options only for this block of code, not throughout the program
         with pd.option_context(
             "display.max_columns", None,   # don't truncate columns
             "display.width", None,         # don't wrap based on terminal guess
             "display.float_format", "{:.2f}".format,  # 2 decimal places
         ):
-            print(self.working_df)
+            print(display_df)
 
     def get_columns(self):
         # Return/print list of available columns (used by multiple menu options)
         return list(self.working_df.columns)
+
+    def export(self, filename):
+         self.working_df.to_csv(filename, index=False)
+         print(f"Saved current data to {filename}.")

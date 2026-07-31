@@ -11,7 +11,7 @@ class Menu:
             self.print_menu()
             choice = input("Enter your choice: ")
 
-            if choice == "8":
+            if choice == "9":
                 print("Goodbye!")
                 break
 
@@ -27,7 +27,8 @@ class Menu:
         print("5) Correlate")
         print("6) Display current data")
         print("7) Show columns")
-        print("8) Quit")
+        print("8) Export CSV")
+        print("9) Quit")
         # Loop the default menu. Have multiple options for the user (reset, sort, filter, aggregate, correlate, display, quit)
         pass
 
@@ -103,6 +104,16 @@ class Menu:
         elif choice == "7":
             # Display columns
             print(dm.get_columns())
+
+        elif choice == "8":
+            # Save working CSV
+            filename = input("Enter filename to save as (e.g. output.csv): ").strip()
+            if not filename: 
+                print("No filename entered. Returning to menu.")
+            else:
+                if not filename.endswith(".csv"):
+                    filename += ".csv"
+                dm.export(filename)
 
         else:
             print("Invalid choice. Please try again.")
